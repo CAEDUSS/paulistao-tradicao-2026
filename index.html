@@ -6,53 +6,45 @@
     <title>Paulistão da Tradição 2026</title>
     <style>
         :root { --primary: #06aa48; --bg: #e9ecef; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
+        body { font-family: sans-serif; margin: 0; background: var(--bg); color: #333; }
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        .info-bar { background: #048a3a; color: white; padding: 8px; font-size: 0.8rem; text-align: center; }
         
-        header { background: var(--primary); color: white; padding: 30px 15px; text-align: center; }
-        header h1 { margin: 0; font-size: 1.8rem; }
-        
-        .info-bar { background: #048a3a; color: white; padding: 10px; font-size: 0.8rem; text-align: center; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-
         nav { display: flex; justify-content: center; background: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        nav button { padding: 15px; border: none; background: none; cursor: pointer; font-weight: bold; color: #666; border-bottom: 4px solid transparent; }
-        nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+        nav button { padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: bold; color: #666; }
+        nav button.active { color: var(--primary); border-bottom: 4px solid var(--primary); }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         section { display: none; }
         section.active { display: block; }
 
-        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { border-left: 5px solid var(--primary); padding-left: 10px; font-size: 1.2rem; margin-top: 0; }
+        .card { background: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { border-left: 5px solid var(--primary); padding-left: 10px; margin: 0 0 15px 0; font-size: 1.2rem; }
 
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
-        .g4 { background-color: #f0fff4; }
-
-        .match-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        th, td { padding: 10px 5px; text-align: center; border-bottom: 1px solid #eee; }
+        .match-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
         .team { flex: 1; font-size: 0.9rem; }
-        .team-r { text-align: right; }
-        input[type="number"] { width: 40px; height: 30px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; }
-
-        .regra { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .regra strong { color: var(--primary); }
+        .score-inputs { display: flex; gap: 5px; }
+        input { width: 35px; height: 30px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+        
+        .regra { margin-bottom: 8px; font-size: 0.9rem; border-bottom: 1px solid #eee; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Paulistão da Tradição 2026</h1>
+    <h1 style="margin:0">Paulistão da Tradição 2026</h1>
 </header>
 <div class="info-bar">
-    <span>📍 Rancho Paumar (Itatiba)</span>
-    <span>🕒 13:00 - Início</span>
-    <span>⏱️ 12 min por jogo</span>
+    📍 Rancho Paumar (Itatiba) | 🕒 13:00 Início | ⏱️ 12 min por jogo
 </div>
 
 <nav>
-    <button onclick="trocar('tabela', this)" class="active">Tabela</button>
-    <button onclick="trocar('rodadas', this)">Rodadas</button>
-    <button onclick="trocar('mata', this)">Finais</button>
-    <button onclick="trocar('regras', this)">Regras</button>
+    <button onclick="trocar('tabela')" id="btn-tabela" class="active">Tabela</button>
+    <button onclick="trocar('rodadas')" id="btn-rodadas">Rodadas</button>
+    <button onclick="trocar('mata')" id="btn-mata">Finais</button>
+    <button onclick="trocar('regras')" id="btn-regras">Regras</button>
 </nav>
 
 <div class="container">
@@ -65,31 +57,3 @@
             </table>
         </div>
     </section>
-
-    <section id="rodadas">
-        <div id="jogosLista"></div>
-    </section>
-
-    <section id="mata">
-        <div class="card" id="mataDiv"></div>
-    </section>
-
-    <section id="regras">
-        <div class="card">
-            <h2>Regulamento Rápido</h2>
-            <div class="regra"><strong>Formato:</strong> Grupo único (todos contra todos). Top 4 avançam.</div>
-            <div class="regra"><strong>Cartões:</strong> Amarelo (2 min fora com substituição). Vermelho (2 min a menos).</div>
-            <div class="regra"><strong>Empate:</strong> No mata-mata, decisão por pênaltis.</div>
-            <div class="regra"><strong>Faltas:</strong> Sem carrinho. Laterais e escanteios com as mãos.</div>
-        </div>
-    </section>
-</div>
-
-<script>
-const EQUIPES = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
-const RODADAS = [
-    { n: "1ª Rodada", j: [["Legião Sorocabana","Romanos"],["Milites Peregrinus","Pão de Queijo"],["Galícia","Oratório"]] },
-    { n: "2ª Rodada", j: [["Milites Peregrinus","Oratório"],["Legião Sorocabana","Pão de Queijo"],["Trad Fut","Romanos"]] },
-    { n: "3ª Rodada", j: [["Romanos","Oratório"],["Trad Fut","Pão de Queijo"],["Legião Sorocabana","Galícia"]] },
-    { n: "4ª Rodada", j: [["Trad Fut","Oratório"],["Pão de Queijo","Galícia"],["Romanos","Milites Peregrinus"]] },
-    { n: "5ª Rodada", j:
