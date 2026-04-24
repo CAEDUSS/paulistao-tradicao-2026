@@ -52,41 +52,62 @@ input { width:40px; }
 
 <script>
 const rodadas = [
-[
-["Legião Sorocabana","Romanos"],
-["Milites Peregrinus","Pão de Queijo"],
-["Galícia","Oratório"]
-],
-[
-["Milites Peregrinus","Oratório"],
-["Legião Sorocabana","Pão de Queijo"],
-["Trad Fut","Romanos"]
-],
-[
-["Romanos","Oratório"],
-["Trad Fut","Pão de Queijo"],
-["Legião Sorocabana","Galícia"]
-],
-[
-["Trad Fut","Oratório"],
-["Pão de Queijo","Galícia"],
-["Romanos","Milites Peregrinus"]
-],
-[
-["Trad Fut","Galícia"],
-["Legião Sorocabana","Milites Peregrinus"],
-["Oratório","Pão de Queijo"]
-],
-[
-["Trad Fut","Milites Peregrinus"],
-["Galícia","Romanos"],
-["Oratório","Legião Sorocabana"]
-],
-[
-["Trad Fut","Legião Sorocabana"],
-["Milites Peregrinus","Galícia"],
-["Romanos","Pão de Queijo"]
-]
+  {
+    nome: "1ª Rodada",
+    jogos: [
+      ["Legião Sorocabana","Romanos"],
+      ["Milites Peregrinus","Pão de Queijo"],
+      ["Galícia","Oratório"]
+    ]
+  },
+  {
+    nome: "2ª Rodada",
+    jogos: [
+      ["Milites Peregrinus","Oratório"],
+      ["Legião Sorocabana","Pão de Queijo"],
+      ["Trad Fut","Romanos"]
+    ]
+  },
+  {
+    nome: "3ª Rodada",
+    jogos: [
+      ["Romanos","Oratório"],
+      ["Trad Fut","Pão de Queijo"],
+      ["Legião Sorocabana","Galícia"]
+    ]
+  },
+  {
+    nome: "4ª Rodada",
+    jogos: [
+      ["Trad Fut","Oratório"],
+      ["Pão de Queijo","Galícia"],
+      ["Romanos","Milites Peregrinus"]
+    ]
+  },
+  {
+    nome: "5ª Rodada",
+    jogos: [
+      ["Trad Fut","Galícia"],
+      ["Legião Sorocabana","Milites Peregrinus"],
+      ["Oratório","Pão de Queijo"]
+    ]
+  },
+  {
+    nome: "6ª Rodada",
+    jogos: [
+      ["Trad Fut","Milites Peregrinus"],
+      ["Galícia","Romanos"],
+      ["Oratório","Legião Sorocabana"]
+    ]
+  },
+  {
+    nome: "7ª Rodada",
+    jogos: [
+      ["Trad Fut","Legião Sorocabana"],
+      ["Milites Peregrinus","Galícia"],
+      ["Romanos","Pão de Queijo"]
+    ]
+  }
 ];
 
 let dados = JSON.parse(localStorage.getItem("dados")) || {};
@@ -100,16 +121,18 @@ function render(){
  let jogosDiv = document.getElementById("jogos");
  jogosDiv.innerHTML="";
 
- rodadas.forEach((r,i)=>{
- jogosDiv.innerHTML += `<div class='card'><strong>Rodada ${i+1}</strong><br>`;
- r.forEach((j,idx)=>{
+ rodadas.forEach((rodada,i)=>{
+ jogosDiv.innerHTML += `<div class='card'><strong>${rodada.nome}</strong><br><br>`;
+ rodada.jogos.forEach((j,idx)=>{
  let key = `${i}-${idx}`;
  let g1 = dados[key]?.g1 ?? "";
  let g2 = dados[key]?.g2 ?? "";
  jogosDiv.innerHTML += `
  ${j[0]} <input value="${g1}" onchange="salvar('${key}',0,this.value)">
- x <input value="${g2}" onchange="salvar('${key}',1,this.value)"> ${j[1]}<br>`;
+ x <input value="${g2}" onchange="salvar('${key}',1,this.value)"> ${j[1]}<br><br>`;
  });
+ jogosDiv.innerHTML += "</div>";
+});
  jogosDiv.innerHTML += "</div>";
  });
 
@@ -127,7 +150,7 @@ function salvar(k,l,v){
 function calcular(){
  let tabela = {};
 
- rodadas.flat().forEach(j=>{
+ rodadas.forEach(r=>r.jogos.forEach(j=>{
  tabela[j[0]] = tabela[j[0]] || {pts:0,sg:0};
  tabela[j[1]] = tabela[j[1]] || {pts:0,sg:0};
  });
@@ -135,7 +158,7 @@ function calcular(){
  Object.entries(dados).forEach(([k,v])=>{
  if(isNaN(v.g1)||isNaN(v.g2)) return;
  let [r,i]=k.split("-");
- let j = rodadas[r][i];
+ let j = rodadas[r].jogos[i];
 
  tabela[j[0]].sg += v.g1-v.g2;
  tabela[j[1]].sg += v.g2-v.g1;
