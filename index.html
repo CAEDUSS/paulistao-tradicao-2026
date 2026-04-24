@@ -7,15 +7,16 @@
 <style>
 body { font-family: Arial; margin:0; background:#f1f1f1; }
 header { background:#06aa48; color:white; padding:20px; text-align:center; }
-section { padding:20px; }
-h2 { color:#06aa48; }
+nav { display:flex; justify-content:center; gap:10px; background:#eee; padding:10px; }
+nav button { padding:10px; border:none; cursor:pointer; }
+.active { background:#06aa48; color:white; }
+section { display:none; padding:20px; }
+section.active { display:block; }
 .card { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
 table { width:100%; border-collapse:collapse; background:white; }
 th, td { padding:8px; border:1px solid #ddd; text-align:center; }
 input { width:40px; }
-button { background:#06aa48; color:white; border:none; padding:5px 10px; cursor:pointer; }
 </style>
-
 </head>
 <body>
 
@@ -23,198 +24,152 @@ button { background:#06aa48; color:white; border:none; padding:5px 10px; cursor:
 <h1>Paulistão da Tradição 2026</h1>
 </header>
 
-<section>
+<nav>
+<button onclick="trocar('tabela')">Tabela</button>
+<button onclick="trocar('rodadas')">Rodadas</button>
+<button onclick="trocar('mata')">Finais</button>
+</nav>
+
+<section id="tabela" class="active">
 <h2>Classificação</h2>
-<table id="tabela">
+<table>
 <thead>
-<tr>
-<th>#</th><th>Equipe</th><th>Pts</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th>
-</tr>
+<tr><th>#</th><th>Equipe</th><th>Pts</th><th>SG</th></tr>
 </thead>
-<tbody></tbody>
+<tbody id="tbody"></tbody>
 </table>
 </section>
 
-<section>
-<h2>Jogos</h2>
+<section id="rodadas">
+<h2>Rodadas</h2>
 <div id="jogos"></div>
 </section>
 
-<section>
-<h2>Mata-mata</h2>
-<div id="mata"></div>
+<section id="mata">
+<h2>Fase Final</h2>
+<div id="mataDiv"></div>
 </section>
 
 <script>
-const equipes = [
-"Legião Sorocabana","Romanos","Milites Peregrinus",
-"Pão de Queijo","Galícia","Oratório","Trad Fut"
+const rodadas = [
+[
+["Legião Sorocabana","Romanos"],
+["Milites Peregrinus","Pão de Queijo"],
+["Galícia","Oratório"]
+],
+[
+["Milites Peregrinus","Oratório"],
+["Legião Sorocabana","Pão de Queijo"],
+["Trad Fut","Romanos"]
+],
+[
+["Romanos","Oratório"],
+["Trad Fut","Pão de Queijo"],
+["Legião Sorocabana","Galícia"]
+],
+[
+["Trad Fut","Oratório"],
+["Pão de Queijo","Galícia"],
+["Romanos","Milites Peregrinus"]
+],
+[
+["Trad Fut","Galícia"],
+["Legião Sorocabana","Milites Peregrinus"],
+["Oratório","Pão de Queijo"]
+],
+[
+["Trad Fut","Milites Peregrinus"],
+["Galícia","Romanos"],
+["Oratório","Legião Sorocabana"]
+],
+[
+["Trad Fut","Legião Sorocabana"],
+["Milites Peregrinus","Galícia"],
+["Romanos","Pão de Queijo"]
+]
 ];
 
-let tabela = {};
-let jogos = JSON.parse(localStorage.getItem("jogos")) || [];
-let mata = JSON.parse(localStorage.getItem("mata")) || {};
+let dados = JSON.parse(localStorage.getItem("dados")) || {};
 
-function init(){
-equipes.forEach(e=>tabela[e]={pts:0,j:0,v:0,e:0,d:0,sg:0});
-
-if(jogos.length===0){
-for(let i=0;i<equipes.length;i++){
-for(let j=i+1;j<equipes.length;j++){
-jogos.push({t1:equipes[i],t2:equipes[j],g1:null,g2:null});
-}}}
-
-renderJogos();
-atualizar();
+function trocar(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
 }
 
-function renderJogos(){
-let div=document.getElementById("jogos");
-div.innerHTML="";
-jogos.forEach((j,i)=>{
-div.innerHTML+=`
-<div class="card">
-${j.t1}
-<input type="number" value="${j.g1??""}" id="g1-${i}">
-x
-<input type="number" value="${j.g2??""}" id="g2-${i}">
-${j.t2}
-<button onclick="salvar(${i})">OK</button>
-</div>`;
-});
+function render(){
+ let jogosDiv = document.getElementById("jogos");
+ jogosDiv.innerHTML="";
+
+ rodadas.forEach((r,i)=>{
+ jogosDiv.innerHTML += `<div class='card'><strong>Rodada ${i+1}</strong><br>`;
+ r.forEach((j,idx)=>{
+ let key = `${i}-${idx}`;
+ let g1 = dados[key]?.g1 ?? "";
+ let g2 = dados[key]?.g2 ?? "";
+ jogosDiv.innerHTML += `
+ ${j[0]} <input value="${g1}" onchange="salvar('${key}',0,this.value)">
+ x <input value="${g2}" onchange="salvar('${key}',1,this.value)"> ${j[1]}<br>`;
+ });
+ jogosDiv.innerHTML += "</div>";
+ });
+
+ calcular();
 }
 
-function salvar(i){
-let g1=parseInt(document.getElementById(`g1-${i}`).value);
-let g2=parseInt(document.getElementById(`g2-${i}`).value);
-if(isNaN(g1)||isNaN(g2)) return;
-
-jogos[i].g1=g1;
-jogos[i].g2=g2;
-
-localStorage.setItem("jogos",JSON.stringify(jogos));
-atualizar();
+function salvar(k,l,v){
+ if(!dados[k]) dados[k]={};
+ if(l===0) dados[k].g1=parseInt(v);
+ else dados[k].g2=parseInt(v);
+ localStorage.setItem("dados",JSON.stringify(dados));
+ calcular();
 }
 
-function atualizar(){
-equipes.forEach(e=>tabela[e]={pts:0,j:0,v:0,e:0,d:0,sg:0});
+function calcular(){
+ let tabela = {};
 
-jogos.forEach(j=>{
-if(j.g1==null) return;
-let t1=tabela[j.t1], t2=tabela[j.t2];
+ rodadas.flat().forEach(j=>{
+ tabela[j[0]] = tabela[j[0]] || {pts:0,sg:0};
+ tabela[j[1]] = tabela[j[1]] || {pts:0,sg:0};
+ });
 
-t1.j++; t2.j++;
-t1.sg+=j.g1-j.g2;
-t2.sg+=j.g2-j.g1;
+ Object.entries(dados).forEach(([k,v])=>{
+ if(isNaN(v.g1)||isNaN(v.g2)) return;
+ let [r,i]=k.split("-");
+ let j = rodadas[r][i];
 
-if(j.g1>j.g2){t1.v++;t1.pts+=3;t2.d++;}
-else if(j.g2>j.g1){t2.v++;t2.pts+=3;t1.d++;}
-else{t1.e++;t2.e++;t1.pts++;t2.pts++;}
-});
+ tabela[j[0]].sg += v.g1-v.g2;
+ tabela[j[1]].sg += v.g2-v.g1;
 
-renderTabela();
-gerarMata();
+ if(v.g1>v.g2) tabela[j[0]].pts+=3;
+ else if(v.g2>v.g1) tabela[j[1]].pts+=3;
+ else { tabela[j[0]].pts++; tabela[j[1]].pts++; }
+ });
+
+ let rank = Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
+ let tbody = document.getElementById("tbody");
+ tbody.innerHTML="";
+
+ rank.forEach((r,i)=>{
+ tbody.innerHTML += `<tr style='${i<4?"background:#d4edda":""}'>
+ <td>${i+1}</td><td>${i==0?"🥇 ":""}${r[0]}</td>
+ <td>${r[1].pts}</td><td>${r[1].sg}</td></tr>`;
+ });
+
+ renderMata(rank);
 }
 
-function renderTabela(){
-let tbody=document.querySelector("#tabela tbody");
-tbody.innerHTML="";
-let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
-
-rank.forEach((r,i)=>{
-let d=r[1];
-tbody.innerHTML+=`
-<tr style="${i<4?'background:#d4edda':''}">
-<td>${i+1}</td>
-<td>${i==0?'🥇 ':''}${r[0]}</td>
-<td>${d.pts}</td><td>${d.j}</td><td>${d.v}</td>
-<td>${d.e}</td><td>${d.d}</td><td>${d.sg}</td>
-</tr>`;
-});
+function renderMata(rank){
+ let div = document.getElementById("mataDiv");
+ if(rank.length<4) return;
+ div.innerHTML = `
+ <div class='card'>
+ Semifinal 1: ${rank[0][0]} x ${rank[3][0]}<br>
+ Semifinal 2: ${rank[1][0]} x ${rank[2][0]}<br><br>
+ 3º Lugar e Final serão definidos automaticamente
+ </div>`;
 }
 
-function gerarMata(){
-let div=document.getElementById("mata");
-let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
-
-if(rank[3][1].pts===0){
-div.innerHTML="Preencha os jogos...";
-return;
-}
-
-let semi1 = [rank[0][0], rank[3][0]];
-let semi2 = [rank[1][0], rank[2][0]];
-
-div.innerHTML=`
-<div class="card">
-<strong>Semifinais</strong><br>
-${jogoMata("semi1", semi1)}<br>
-${jogoMata("semi2", semi2)}
-</div>
-<div class="card">
-<strong>3º Lugar</strong><br>
-${jogoMata("terceiro")}
-</div>
-<div class="card">
-<strong>Final</strong><br>
-${jogoMata("final")}
-</div>
-<div class="card">
-<strong>Campeão:</strong> ${mata.campeao || "-"}
-</div>
-`;
-}
-
-function jogoMata(id, times=[]){
-let j = mata[id] || {t1:times[0], t2:times[1], g1:null, g2:null};
-
-return `
-${j.t1||"-"}
-<input type="number" value="${j.g1??""}" onchange="salvarMata('${id}',0,this.value)">
-x
-<input type="number" value="${j.g2??""}" onchange="salvarMata('${id}',1,this.value)">
-${j.t2||"-"}
-`;
-}
-
-function salvarMata(id, lado, valor){
-if(!mata[id]) mata[id]={};
-
-if(lado===0) mata[id].g1=parseInt(valor);
-else mata[id].g2=parseInt(valor);
-
-definirAvancos();
-localStorage.setItem("mata",JSON.stringify(mata));
-gerarMata();
-}
-
-function definirAvancos(){
-function vencedor(j){
-if(j.g1>j.g2) return j.t1;
-if(j.g2>j.g1) return j.t2;
-return null;
-}
-
-if(mata.semi1 && mata.semi2){
-let v1=vencedor(mata.semi1);
-let v2=vencedor(mata.semi2);
-
-let p1 = mata.semi1.t1===v1?mata.semi1.t2:mata.semi1.t1;
-let p2 = mata.semi2.t1===v2?mata.semi2.t2:mata.semi2.t1;
-
-if(v1 && v2){
-mata.final={t1:v1,t2:v2};
-mata.terceiro={t1:p1,t2:p2};
-}
-}
-
-if(mata.final){
-let v = vencedor(mata.final);
-if(v) mata.campeao=v;
-}
-}
-
-init();
+render();
 </script>
 
 </body>
