@@ -1,36 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paulistão da Tradição 2026</title>
+    <style>
+        :root {
+            --primary: #06aa48;
+            --primary-dark: #048a3a;
+            --bg: #e9ecef;
+            --text: #212529;
+            --white: #ffffff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text);
+        }
+
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 40px 20px; 
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; }
+
+        nav { 
+            display: flex; 
+            justify-content: center; 
+            background: var(--white); 
+            padding: 0; 
+            position: sticky; 
+            top: 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        nav button { 
+            padding: 15px 25px; 
+            border: none; 
+            background: none;
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #555;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+        }
+
+        nav button.active { 
+            color: var(--primary); 
+            border-bottom-color: var(--primary);
+            background: rgba(6, 170, 72, 0.05);
+        }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+        section { display: none; }
+        section.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card { 
+            background: var(--white); 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        h2 { margin-bottom: 20px; font-size: 1.5rem; color: #333; }
+
+        /* Tabela */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f8f9fa; color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+        .g4 { background-color: #f0fff4; }
+
+        /* Jogos */
+        .match-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .team { flex: 1; font-weight: 500; }
+        .team-r { text-align: right; }
+        
+        .score-box { display: flex; align-items: center; gap: 10px; padding: 0 15px; }
+        input[type="number"] { 
+            width: 45px; 
+            height: 35px;
+            text-align: center; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        input:focus { border-color: var(--primary); outline: none; }
+
+        .badge-lider { background: gold; border-radius: 50%; padding: 2px 6px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Paulistão da Tradição 2026</h1>
+</header>
+
+<nav id="menu">
+    <button onclick="trocar('tabela')" class="active">Tabela</button>
+    <button onclick="trocar('rodadas')">Rodadas</button>
+    <button onclick="trocar('mata')">Finais</button>
+</nav>
+
+<div class="container">
+    <section id="tabela" class="active">
+        <div class="card">
+            <h2>Classificação Atual</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th style="text-align: left;">Clube</th>
+                        <th>Pts</th>
+                        <th>SG</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="rodadas">
+        <div id="jogos"></div>
+    </section>
+
+    <section id="mata">
+        <div id="mataDiv"></div>
+    </section>
+</div>
+
+<script>
+const rodadas = [
+    { nome: "1ª Rodada", jogos: [["Legião Sorocabana","Romanos"],["Milites Peregrinus","Pão de Queijo"],["Galícia","Oratório"]] },
+    { nome: "2ª Rodada", jogos: [["Milites Peregrinus","Oratório"],["Legião Sorocabana","Pão de Queijo"],["Trad Fut","Romanos"]] },
+    { nome: "3ª Rodada", jogos: [["Romanos","Oratório"],["Trad Fut","Pão de Queijo"],["Legião Sorocabana","Galícia"]] },
+    { nome: "4ª Rodada", jogos: [["Trad Fut","Oratório"],["Pão de Queijo","Galícia"],["Romanos","Milites Peregrinus"]] },
+    { nome: "5ª Rodada", jogos: [["Trad Fut","Galícia"],["Legião Sorocabana","Milites Peregrinus"],["Oratório","Pão de Queijo"]] },
+    { nome: "6ª Rodada", jogos: [["Trad Fut","Milites Peregrinus"],["Galícia","Romanos"],["Oratório","Legião Sorocabana"]] },
+    { nome: "7ª Rodada", jogos: [["Trad Fut","Legião Sorocabana"],["Milites Peregrinus","Galícia"],["Romanos","Pão de Queijo"]] }
+];
+
+let dados = JSON.parse(localStorage.getItem("tradicao_2026")) || {};
+
+function trocar(id){
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    event.currentTarget.classList.add("active");
+}
+
+function renderRodadas(){
+    const container = document.getElementById("jogos");
+    container.innerHTML = "";
+
+    rodadas.forEach((rodada, i) => {
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<h2>${rodada.nome}</h2>`;
+        
+        rodada.jogos.forEach((j, idx) => {
+            let key = `${i}-${idx}`;
+            let g1 = dados[key]?.g1 ?? "";
+            let g2 = dados[key]?.g2 ?? "";
+            
+            div.innerHTML += `
+            <div class="match-row">
+                <span class="team">${j[0]}</span>
+                <div class="score-box">
+                    <input type="number" value="${g1}" oninput="salvar('${key}',0,this.value)">
+                    <span>×</span>
+                    <input type="number" value="${g2}" oninput="salvar('${key}',1,this.value)">
+                </div>
+                <span class="team team-r">${j[1]}</span>
+            </div>`;
+        });
+        container.appendChild(div);
+    });
+}
+
+function salvar(k, lado, v){
+    if(!dados[k]) dados[k] = { g1: null, g2: null };
+    let valor = v === "" ? null : parseInt(v);
+    if(lado === 0) dados[k].g1 = valor;
+    else dados[k].g2 = valor;
+    localStorage.setItem("tradicao_2026", JSON.stringify(dados));
+    calcular();
+}
+
+function calcular(){
+    let tabela = {};
+    const equipes = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
+    equipes.forEach(eq => tabela[eq] = { pts: 0, sg: 0 });
+
+    Object.entries(dados).forEach(([k, v]) => {
+        if(v.g1 === null || v.g2 === null) return;
+        let [r, i] = k.split("-");
+        let time = rodadas[r].jogos[i];
+
+        tabela[time[0]].sg += (v.g1 - v.g2);
+        tabela[time[1]].sg += (v.g2 - v.g1);
+
+        if(v.g1 > v.g2) tabela[time[0]].pts += 3;
+        else if(v.g2 > v.g1) tabela[time[1]].pts += 3;
+        else { tabela[time[0]].pts++; tabela[time[1]].pts++; }
+    });
+
+    let rank = Object.entries(tabela).sort((a,b) => b[1].pts - a[1].pts || b[1].sg - a[1].sg);
+    
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+    rank.forEach((r, i) => {
+        tbody.innerHTML += `
+        <tr class="${i < 4 ? 'g4' : ''}">
+            <td><strong>${i + 1}º</strong></td>
+            <td style="text-align: left;">${i === 0 ? '<span class="badge-lider">🏆</span>' : ''}${r[0]}</td>
+            <td><strong>${r[1].pts}</strong></td>
+            <td>${r[1].sg}</td>
+        </tr>`;
+    });
+    renderMata(rank);
+}
+
 function renderMata(rank){
     let div = document.getElementById("mataDiv");
-
-    // Se ainda não tiver jogos suficientes
-    if(!rank || rank.length < 4){
-        div.innerHTML = "<div class='card'>Preencha os jogos para gerar a fase final</div>";
-        return;
-    }
-
-    // Verifica se já houve pontuação
-    if(rank[3][1].pts === 0){
-        div.innerHTML = "<div class='card'>A fase final aparecerá após os primeiros resultados</div>";
-        return;
-    }
-
-    const semi1 = `${rank[0][0]} x ${rank[3][0]}`;
-    const semi2 = `${rank[1][0]} x ${rank[2][0]}`;
-
     div.innerHTML = `
     <div class='card'>
-        <h3>🏆 Semifinais</h3>
-        ${semi1}<br><br>
-        ${semi2}
-    </div>
-
-    <div class='card'>
-        <h3>🥉 3º Lugar</h3>
-        <p>(definido após semifinais)</p>
-    </div>
-
-    <div class='card'>
-        <h3>🥇 Final</h3>
-        <p>(definida após semifinais)</p>
-    </div>
-    `;
+        <h2>Fase Final</h2>
+        <p><strong>Semifinal A:</strong> ${rank[0][0]} vs ${rank[3][0]}</p>
+        <p><strong>Semifinal B:</strong> ${rank[1][0]} vs ${rank[2][0]}</p>
+    </div>`;
 }
+
+renderRodadas();
+calcular();
+</script>
+</body>
+</html>
