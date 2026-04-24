@@ -8,111 +8,102 @@
         :root {
             --primary: #06aa48;
             --primary-dark: #048a3a;
-            --bg: #f4f7f6;
-            --text: #333;
+            --bg: #e9ecef;
+            --text: #212529;
             --white: #ffffff;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             margin: 0; 
             background: var(--bg); 
             color: var(--text);
-            line-height: 1.6;
         }
 
         header { 
             background: var(--primary); 
             color: white; 
-            padding: 2rem 1rem; 
-            text-align: center; 
-            box-shadow: var(--shadow);
+            padding: 40px 20px; 
+            text-align: center;
         }
 
-        header h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; }
+        header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; }
 
         nav { 
             display: flex; 
             justify-content: center; 
             background: var(--white); 
-            padding: 10px; 
+            padding: 0; 
             position: sticky; 
             top: 0; 
-            z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
 
         nav button { 
-            padding: 12px 24px; 
+            padding: 15px 25px; 
             border: none; 
             background: none;
             cursor: pointer; 
-            font-weight: bold; 
-            color: #666;
-            transition: 0.3s;
-            border-bottom: 3px solid transparent;
+            font-weight: 600; 
+            color: #555;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
         }
 
         nav button.active { 
             color: var(--primary); 
             border-bottom-color: var(--primary);
+            background: rgba(6, 170, 72, 0.05);
         }
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
 
-        section { display: none; animation: fadeIn 0.5s ease; }
-        section.active { display: block; }
+        section { display: none; }
+        section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { 
             background: var(--white); 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            border-radius: 12px; 
-            box-shadow: var(--shadow);
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
         }
 
-        h2 { color: var(--primary); border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 0; }
+        h2 { margin-bottom: 20px; font-size: 1.5rem; color: #333; }
 
-        /* Tabela Estilizada */
-        table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 8px; }
-        th { background: #eee; color: #555; text-transform: uppercase; font-size: 0.85rem; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
-        tr:last-child td { border-bottom: none; }
-        .g4 { background-color: rgba(6, 170, 72, 0.1); }
+        /* Tabela */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f8f9fa; color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+        .g4 { background-color: #f0fff4; }
 
-        /* Jogos e Inputs */
+        /* Jogos */
         .match-row { 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            padding: 10px 0;
-            border-bottom: 1px dashed #eee;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
         }
-        .match-row:last-child { border-bottom: none; }
-        .team-name { flex: 1; font-weight: 500; font-size: 0.95rem; }
-        .team-right { text-align: right; }
+        .team { flex: 1; font-weight: 500; }
+        .team-r { text-align: right; }
         
-        .score-container { display: flex; align-items: center; gap: 8px; }
+        .score-box { display: flex; align-items: center; gap: 10px; padding: 0 15px; }
         input[type="number"] { 
             width: 45px; 
-            padding: 8px; 
+            height: 35px;
             text-align: center; 
             border: 2px solid #ddd; 
-            border-radius: 6px; 
+            border-radius: 8px; 
+            font-size: 1.1rem;
             font-weight: bold;
-            outline: none;
-            transition: 0.2s;
         }
-        input[type="number"]:focus { border-color: var(--primary); }
+        input:focus { border-color: var(--primary); outline: none; }
 
-        /* Versão Mobile */
-        @media (max-width: 480px) {
-            .team-name { font-size: 0.8rem; }
-            nav button { padding: 10px 12px; font-size: 0.9rem; }
-        }
+        .badge-lider { background: gold; border-radius: 50%; padding: 2px 6px; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -129,13 +120,13 @@
 
 <div class="container">
     <section id="tabela" class="active">
-        <h2>Classificação</h2>
         <div class="card">
+            <h2>Classificação Atual</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th style="text-align: left;">Equipe</th>
+                        <th>Pos</th>
+                        <th style="text-align: left;">Clube</th>
                         <th>Pts</th>
                         <th>SG</th>
                     </tr>
@@ -146,12 +137,10 @@
     </section>
 
     <section id="rodadas">
-        <h2>Confrontos</h2>
         <div id="jogos"></div>
     </section>
 
     <section id="mata">
-        <h2>Fase Eliminatória</h2>
         <div id="mataDiv"></div>
     </section>
 </div>
@@ -167,7 +156,7 @@ const rodadas = [
     { nome: "7ª Rodada", jogos: [["Trad Fut","Legião Sorocabana"],["Milites Peregrinus","Galícia"],["Romanos","Pão de Queijo"]] }
 ];
 
-let dados = JSON.parse(localStorage.getItem("dados_paulistao_2026")) || {};
+let dados = JSON.parse(localStorage.getItem("tradicao_2026")) || {};
 
 function trocar(id){
     document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
@@ -177,31 +166,31 @@ function trocar(id){
 }
 
 function renderRodadas(){
-    const jogosDiv = document.getElementById("jogos");
-    jogosDiv.innerHTML = "";
+    const container = document.getElementById("jogos");
+    container.innerHTML = "";
 
     rodadas.forEach((rodada, i) => {
-        let card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<strong>${rodada.nome}</strong><br><br>`;
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<h2>${rodada.nome}</h2>`;
         
         rodada.jogos.forEach((j, idx) => {
             let key = `${i}-${idx}`;
             let g1 = dados[key]?.g1 ?? "";
             let g2 = dados[key]?.g2 ?? "";
             
-            card.innerHTML += `
+            div.innerHTML += `
             <div class="match-row">
-                <span class="team-name">${j[0]}</span>
-                <div class="score-container">
-                    <input type="number" min="0" value="${g1}" oninput="salvar('${key}',0,this.value)">
-                    <span>x</span>
-                    <input type="number" min="0" value="${g2}" oninput="salvar('${key}',1,this.value)">
+                <span class="team">${j[0]}</span>
+                <div class="score-box">
+                    <input type="number" value="${g1}" oninput="salvar('${key}',0,this.value)">
+                    <span>×</span>
+                    <input type="number" value="${g2}" oninput="salvar('${key}',1,this.value)">
                 </div>
-                <span class="team-name team-right">${j[1]}</span>
+                <span class="team team-r">${j[1]}</span>
             </div>`;
         });
-        jogosDiv.appendChild(card);
+        container.appendChild(div);
     });
 }
 
@@ -210,30 +199,26 @@ function salvar(k, lado, v){
     let valor = v === "" ? null : parseInt(v);
     if(lado === 0) dados[k].g1 = valor;
     else dados[k].g2 = valor;
-    
-    localStorage.setItem("dados_paulistao_2026", JSON.stringify(dados));
+    localStorage.setItem("tradicao_2026", JSON.stringify(dados));
     calcular();
 }
 
 function calcular(){
     let tabela = {};
     const equipes = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
-    
     equipes.forEach(eq => tabela[eq] = { pts: 0, sg: 0 });
 
     Object.entries(dados).forEach(([k, v]) => {
         if(v.g1 === null || v.g2 === null) return;
         let [r, i] = k.split("-");
-        let j = rodadas[r].jogos[i];
+        let time = rodadas[r].jogos[i];
 
-        if(!tabela[j[0]] || !tabela[j[1]]) return;
+        tabela[time[0]].sg += (v.g1 - v.g2);
+        tabela[time[1]].sg += (v.g2 - v.g1);
 
-        tabela[j[0]].sg += (v.g1 - v.g2);
-        tabela[j[1]].sg += (v.g2 - v.g1);
-
-        if(v.g1 > v.g2) tabela[j[0]].pts += 3;
-        else if(v.g2 > v.g1) tabela[j[1]].pts += 3;
-        else { tabela[j[0]].pts++; tabela[j[1]].pts++; }
+        if(v.g1 > v.g2) tabela[time[0]].pts += 3;
+        else if(v.g2 > v.g1) tabela[time[1]].pts += 3;
+        else { tabela[time[0]].pts++; tabela[time[1]].pts++; }
     });
 
     let rank = Object.entries(tabela).sort((a,b) => b[1].pts - a[1].pts || b[1].sg - a[1].sg);
@@ -243,13 +228,12 @@ function calcular(){
     rank.forEach((r, i) => {
         tbody.innerHTML += `
         <tr class="${i < 4 ? 'g4' : ''}">
-            <td>${i + 1}</td>
-            <td style="text-align: left;">${i === 0 ? '🥇 ' : ''}${r[0]}</td>
+            <td><strong>${i + 1}º</strong></td>
+            <td style="text-align: left;">${i === 0 ? '<span class="badge-lider">🏆</span>' : ''}${r[0]}</td>
             <td><strong>${r[1].pts}</strong></td>
             <td>${r[1].sg}</td>
         </tr>`;
     });
-
     renderMata(rank);
 }
 
@@ -257,18 +241,14 @@ function renderMata(rank){
     let div = document.getElementById("mataDiv");
     div.innerHTML = `
     <div class='card'>
-        <h3>Cruzamento Olímpico</h3>
-        <p><strong>SF 1:</strong> ${rank[0][0]} (1º) x ${rank[3][0]} (4º)</p>
-        <p><strong>SF 2:</strong> ${rank[1][0]} (2º) x ${rank[2][0]} (3º)</p>
-        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-        <small>Os vencedores disputam a Final e os perdedores o 3º lugar.</small>
+        <h2>Fase Final</h2>
+        <p><strong>Semifinal A:</strong> ${rank[0][0]} vs ${rank[3][0]}</p>
+        <p><strong>Semifinal B:</strong> ${rank[1][0]} vs ${rank[2][0]}</p>
     </div>`;
 }
 
-// Inicialização
 renderRodadas();
 calcular();
 </script>
-
 </body>
 </html>
