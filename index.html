@@ -204,3 +204,71 @@ function renderRodadas(){
         jogosDiv.appendChild(card);
     });
 }
+
+function salvar(k, lado, v){
+    if(!dados[k]) dados[k] = { g1: null, g2: null };
+    let valor = v === "" ? null : parseInt(v);
+    if(lado === 0) dados[k].g1 = valor;
+    else dados[k].g2 = valor;
+    
+    localStorage.setItem("dados_paulistao_2026", JSON.stringify(dados));
+    calcular();
+}
+
+function calcular(){
+    let tabela = {};
+    const equipes = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
+    
+    equipes.forEach(eq => tabela[eq] = { pts: 0, sg: 0 });
+
+    Object.entries(dados).forEach(([k, v]) => {
+        if(v.g1 === null || v.g2 === null) return;
+        let [r, i] = k.split("-");
+        let j = rodadas[r].jogos[i];
+
+        if(!tabela[j[0]] || !tabela[j[1]]) return;
+
+        tabela[j[0]].sg += (v.g1 - v.g2);
+        tabela[j[1]].sg += (v.g2 - v.g1);
+
+        if(v.g1 > v.g2) tabela[j[0]].pts += 3;
+        else if(v.g2 > v.g1) tabela[j[1]].pts += 3;
+        else { tabela[j[0]].pts++; tabela[j[1]].pts++; }
+    });
+
+    let rank = Object.entries(tabela).sort((a,b) => b[1].pts - a[1].pts || b[1].sg - a[1].sg);
+    
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+    rank.forEach((r, i) => {
+        tbody.innerHTML += `
+        <tr class="${i < 4 ? 'g4' : ''}">
+            <td>${i + 1}</td>
+            <td style="text-align: left;">${i === 0 ? '🥇 ' : ''}${r[0]}</td>
+            <td><strong>${r[1].pts}</strong></td>
+            <td>${r[1].sg}</td>
+        </tr>`;
+    });
+
+    renderMata(rank);
+}
+
+function renderMata(rank){
+    let div = document.getElementById("mataDiv");
+    div.innerHTML = `
+    <div class='card'>
+        <h3>Cruzamento Olímpico</h3>
+        <p><strong>SF 1:</strong> ${rank[0][0]} (1º) x ${rank[3][0]} (4º)</p>
+        <p><strong>SF 2:</strong> ${rank[1][0]} (2º) x ${rank[2][0]} (3º)</p>
+        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+        <small>Os vencedores disputam a Final e os perdedores o 3º lugar.</small>
+    </div>`;
+}
+
+// Inicialização
+renderRodadas();
+calcular();
+</script>
+
+</body>
+</html>
