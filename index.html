@@ -21,7 +21,6 @@ button { background:#06aa48; color:white; border:none; padding:5px 10px; cursor:
 
 <header>
 <h1>Paulistão da Tradição 2026</h1>
-<p>Simulação estilo GE</p>
 </header>
 
 <section>
@@ -54,6 +53,7 @@ const equipes = [
 
 let tabela = {};
 let jogos = JSON.parse(localStorage.getItem("jogos")) || [];
+let mata = JSON.parse(localStorage.getItem("mata")) || {};
 
 function init(){
 equipes.forEach(e=>tabela[e]={pts:0,j:0,v:0,e:0,d:0,sg:0});
@@ -119,13 +119,14 @@ gerarMata();
 function renderTabela(){
 let tbody=document.querySelector("#tabela tbody");
 tbody.innerHTML="";
-let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-b[1].pts||b[1].sg-a[1].sg);
+let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
 
 rank.forEach((r,i)=>{
 let d=r[1];
 tbody.innerHTML+=`
-<tr>
-<td>${i+1}</td><td>${r[0]}</td>
+<tr style="${i<4?'background:#d4edda':''}">
+<td>${i+1}</td>
+<td>${i==0?'🥇 ':''}${r[0]}</td>
 <td>${d.pts}</td><td>${d.j}</td><td>${d.v}</td>
 <td>${d.e}</td><td>${d.d}</td><td>${d.sg}</td>
 </tr>`;
@@ -134,19 +135,83 @@ tbody.innerHTML+=`
 
 function gerarMata(){
 let div=document.getElementById("mata");
-let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts||b[1].sg-a[1].sg);
+let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
 
 if(rank[3][1].pts===0){
 div.innerHTML="Preencha os jogos...";
 return;
 }
 
+let semi1 = [rank[0][0], rank[3][0]];
+let semi2 = [rank[1][0], rank[2][0]];
+
 div.innerHTML=`
 <div class="card">
 <strong>Semifinais</strong><br>
-${rank[0][0]} x ${rank[3][0]}<br>
-${rank[1][0]} x ${rank[2][0]}
-</div>`;
+${jogoMata("semi1", semi1)}<br>
+${jogoMata("semi2", semi2)}
+</div>
+<div class="card">
+<strong>3º Lugar</strong><br>
+${jogoMata("terceiro")}
+</div>
+<div class="card">
+<strong>Final</strong><br>
+${jogoMata("final")}
+</div>
+<div class="card">
+<strong>Campeão:</strong> ${mata.campeao || "-"}
+</div>
+`;
+}
+
+function jogoMata(id, times=[]){
+let j = mata[id] || {t1:times[0], t2:times[1], g1:null, g2:null};
+
+return `
+${j.t1||"-"}
+<input type="number" value="${j.g1??""}" onchange="salvarMata('${id}',0,this.value)">
+x
+<input type="number" value="${j.g2??""}" onchange="salvarMata('${id}',1,this.value)">
+${j.t2||"-"}
+`;
+}
+
+function salvarMata(id, lado, valor){
+if(!mata[id]) mata[id]={};
+
+if(lado===0) mata[id].g1=parseInt(valor);
+else mata[id].g2=parseInt(valor);
+
+definirAvancos();
+localStorage.setItem("mata",JSON.stringify(mata));
+gerarMata();
+}
+
+function definirAvancos(){
+function vencedor(j){
+if(j.g1>j.g2) return j.t1;
+if(j.g2>j.g1) return j.t2;
+return null;
+}
+
+if(mata.semi1 && mata.semi2){
+let v1=vencedor(mata.semi1);
+let v2=vencedor(mata.semi2);
+
+let p1 = mata.semi1.t1===v1?mata.semi1.t2:mata.semi1.t1;
+let p2 = mata.semi2.t1===v2?mata.semi2.t2:mata.semi2.t1;
+
+if(v1 && v2){
+mata.final={t1:v1,t2:v2};
+mata.terceiro={t1:p1,t2:p2};
+}
+}
+
+if(mata.final){
+let v = vencedor(mata.final);
+if(v) mata.campeao=v;
+}
 }
 
 init();
