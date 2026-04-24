@@ -1,182 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Paulistão da Tradição 2026</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f1f1f1; }
-    header { background: #06aa48; color: white; padding: 20px; text-align: center; }
-    section { padding: 20px; }
-    h2 { color: #06aa48; }
-    .rodada { background: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background: #eee; }
-    input { width: 40px; text-align: center; }
-    button { background: #06aa48; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-  </style>
+<meta charset="UTF-8">
+<title>Paulistão da Tradição 2026</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f1f1f1; }
+header { background:#06aa48; color:white; padding:20px; text-align:center; }
+section { padding:20px; }
+h2 { color:#06aa48; }
+.card { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
+table { width:100%; border-collapse:collapse; background:white; }
+th, td { padding:8px; border:1px solid #ddd; text-align:center; }
+input { width:40px; }
+button { background:#06aa48; color:white; border:none; padding:5px 10px; cursor:pointer; }
+</style>
+
 </head>
 <body>
 
 <header>
-  <h1>Paulistão da Tradição 2026</h1>
-  <p>Simulação estilo GE</p>
+<h1>Paulistão da Tradição 2026</h1>
+<p>Simulação estilo GE</p>
 </header>
 
 <section>
-  <h2>Classificação</h2>
-  <table id="tabela">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Equipe</th>
-        <th>Pts</th>
-        <th>J</th>
-        <th>V</th>
-        <th>E</th>
-        <th>D</th>
-        <th>SG</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h2>Classificação</h2>
+<table id="tabela">
+<thead>
+<tr>
+<th>#</th><th>Equipe</th><th>Pts</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 </section>
 
 <section>
-  <h2>Rodadas</h2>
-  <div id="rodadas"></div>
+<h2>Jogos</h2>
+<div id="jogos"></div>
 </section>
 
 <section>
-  <h2>Fase Final</h2>
-  <div id="mata"></div>
+<h2>Mata-mata</h2>
+<div id="mata"></div>
 </section>
 
 <script>
 const equipes = [
-  "Legião Sorocabana",
-  "Romanos",
-  "Milites Peregrinus",
-  "Pão de Queijo",
-  "Galícia",
-  "Oratório",
-  "Trad Fut"
+"Legião Sorocabana","Romanos","Milites Peregrinus",
+"Pão de Queijo","Galícia","Oratório","Trad Fut"
 ];
 
 let tabela = {};
-let jogos = [];
+let jogos = JSON.parse(localStorage.getItem("jogos")) || [];
 
-function init() {
-  equipes.forEach(e => {
-    tabela[e] = { pts:0,j:0,v:0,e:0,d:0,sg:0 };
-  });
-  gerarJogos();
-  renderRodadas();
-  renderTabela();
+function init(){
+equipes.forEach(e=>tabela[e]={pts:0,j:0,v:0,e:0,d:0,sg:0});
+
+if(jogos.length===0){
+for(let i=0;i<equipes.length;i++){
+for(let j=i+1;j<equipes.length;j++){
+jogos.push({t1:equipes[i],t2:equipes[j],g1:null,g2:null});
+}}}
+
+renderJogos();
+atualizar();
 }
 
-function gerarJogos() {
-  for (let i=0;i<equipes.length;i++){
-    for (let j=i+1;j<equipes.length;j++){
-      jogos.push({t1:equipes[i], t2:equipes[j], g1:null, g2:null});
-    }
-  }
+function renderJogos(){
+let div=document.getElementById("jogos");
+div.innerHTML="";
+jogos.forEach((j,i)=>{
+div.innerHTML+=`
+<div class="card">
+${j.t1}
+<input type="number" value="${j.g1??""}" id="g1-${i}">
+x
+<input type="number" value="${j.g2??""}" id="g2-${i}">
+${j.t2}
+<button onclick="salvar(${i})">OK</button>
+</div>`;
+});
 }
 
-function renderRodadas() {
-  const div = document.getElementById("rodadas");
-  div.innerHTML = "";
+function salvar(i){
+let g1=parseInt(document.getElementById(`g1-${i}`).value);
+let g2=parseInt(document.getElementById(`g2-${i}`).value);
+if(isNaN(g1)||isNaN(g2)) return;
 
-  jogos.forEach((jogo, idx) => {
-    div.innerHTML += `
-      <div class="rodada">
-        ${jogo.t1} 
-        <input type="number" id="g1-${idx}"> x 
-        <input type="number" id="g2-${idx}">
-        ${jogo.t2}
-        <button onclick="salvar(${idx})">OK</button>
-      </div>
-    `;
-  });
+jogos[i].g1=g1;
+jogos[i].g2=g2;
+
+localStorage.setItem("jogos",JSON.stringify(jogos));
+atualizar();
 }
 
-function salvar(i) {
-  const g1 = parseInt(document.getElementById(`g1-${i}`).value);
-  const g2 = parseInt(document.getElementById(`g2-${i}`).value);
-  if (isNaN(g1) || isNaN(g2)) return;
+function atualizar(){
+equipes.forEach(e=>tabela[e]={pts:0,j:0,v:0,e:0,d:0,sg:0});
 
-  const j = jogos[i];
-  j.g1 = g1;
-  j.g2 = g2;
+jogos.forEach(j=>{
+if(j.g1==null) return;
+let t1=tabela[j.t1], t2=tabela[j.t2];
 
-  atualizarTabela();
+t1.j++; t2.j++;
+t1.sg+=j.g1-j.g2;
+t2.sg+=j.g2-j.g1;
+
+if(j.g1>j.g2){t1.v++;t1.pts+=3;t2.d++;}
+else if(j.g2>j.g1){t2.v++;t2.pts+=3;t1.d++;}
+else{t1.e++;t2.e++;t1.pts++;t2.pts++;}
+});
+
+renderTabela();
+gerarMata();
 }
 
-function atualizarTabela() {
-  equipes.forEach(e => tabela[e] = { pts:0,j:0,v:0,e:0,d:0,sg:0 });
+function renderTabela(){
+let tbody=document.querySelector("#tabela tbody");
+tbody.innerHTML="";
+let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-b[1].pts||b[1].sg-a[1].sg);
 
-  jogos.forEach(j => {
-    if (j.g1 === null) return;
-
-    let t1 = tabela[j.t1];
-    let t2 = tabela[j.t2];
-
-    t1.j++; t2.j++;
-    t1.sg += j.g1 - j.g2;
-    t2.sg += j.g2 - j.g1;
-
-    if (j.g1 > j.g2) { t1.v++; t1.pts+=3; t2.d++; }
-    else if (j.g2 > j.g1) { t2.v++; t2.pts+=3; t1.d++; }
-    else { t1.e++; t2.e++; t1.pts++; t2.pts++; }
-  });
-
-  renderTabela();
-  gerarMataMata();
+rank.forEach((r,i)=>{
+let d=r[1];
+tbody.innerHTML+=`
+<tr>
+<td>${i+1}</td><td>${r[0]}</td>
+<td>${d.pts}</td><td>${d.j}</td><td>${d.v}</td>
+<td>${d.e}</td><td>${d.d}</td><td>${d.sg}</td>
+</tr>`;
+});
 }
 
-function renderTabela() {
-  const tbody = document.querySelector("#tabela tbody");
-  tbody.innerHTML = "";
+function gerarMata(){
+let div=document.getElementById("mata");
+let rank=Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts||b[1].sg-a[1].sg);
 
-  let ranking = Object.entries(tabela).sort((a,b)=>b[1].pts - a[1].pts || b[1].sg - a[1].sg);
-
-  ranking.forEach((r,i)=>{
-    let d = r[1];
-    tbody.innerHTML += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${r[0]}</td>
-        <td>${d.pts}</td>
-        <td>${d.j}</td>
-        <td>${d.v}</td>
-        <td>${d.e}</td>
-        <td>${d.d}</td>
-        <td>${d.sg}</td>
-      </tr>
-    `;
-  });
+if(rank[3][1].pts===0){
+div.innerHTML="Preencha os jogos...";
+return;
 }
 
-function gerarMataMata() {
-  const div = document.getElementById("mata");
-
-  let ranking = Object.entries(tabela).sort((a,b)=>b[1].pts - a[1].pts || b[1].sg - a[1].sg);
-
-  if (ranking[3][1].pts === 0) {
-    div.innerHTML = "<p>Preencha os jogos para gerar semifinais</p>";
-    return;
-  }
-
-  let semi1 = `${ranking[0][0]} x ${ranking[3][0]}`;
-  let semi2 = `${ranking[1][0]} x ${ranking[2][0]}`;
-
-  div.innerHTML = `
-    <div class="rodada">
-      <strong>Semifinais</strong><br>
-      ${semi1}<br>
-      ${semi2}
-    </div>
-  `;
+div.innerHTML=`
+<div class="card">
+<strong>Semifinais</strong><br>
+${rank[0][0]} x ${rank[3][0]}<br>
+${rank[1][0]} x ${rank[2][0]}
+</div>`;
 }
 
 init();
