@@ -7,248 +7,121 @@
     <style>
         :root {
             --primary: #06aa48;
-            --primary-dark: #048a3a;
-            --bg: #e9ecef;
-            --text: #212529;
+            --bg: #f8f9fa;
             --white: #ffffff;
+            --accent: #ffc107;
         }
 
-        body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            margin: 0; 
-            background: var(--bg); 
-            color: var(--text);
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: #333; }
 
-        header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 40px 20px; 
-            text-align: center;
-        }
+        /* HEADER E INFOS */
+        header { background: var(--primary); color: white; padding: 30px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .info-bar { background: #048a3a; color: #e0f2f1; padding: 10px; font-size: 0.85rem; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
 
-        header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; }
+        /* NAVEGAÇÃO */
+        nav { display: flex; justify-content: center; background: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav button { padding: 15px 20px; border: none; background: none; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; border-bottom: 4px solid transparent; }
+        nav button.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0fff4; }
 
-        nav { 
-            display: flex; 
-            justify-content: center; 
-            background: var(--white); 
-            padding: 0; 
-            position: sticky; 
-            top: 0; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        nav button { 
-            padding: 15px 25px; 
-            border: none; 
-            background: none;
-            cursor: pointer; 
-            font-weight: 600; 
-            color: #555;
-            transition: all 0.3s;
-            border-bottom: 4px solid transparent;
-        }
-
-        nav button.active { 
-            color: var(--primary); 
-            border-bottom-color: var(--primary);
-            background: rgba(6, 170, 72, 0.05);
-        }
-
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-
-        section { display: none; }
-        section.active { display: block; animation: fadeIn 0.4s ease; }
-
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        section { display: none; animation: fadeIn 0.3s ease; }
+        section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { 
-            background: var(--white); 
-            padding: 25px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
+        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h2 { border-left: 5px solid var(--primary); padding-left: 12px; font-size: 1.3rem; margin-top: 0; color: #2c3e50; }
 
-        h2 { margin-bottom: 20px; font-size: 1.5rem; color: #333; }
+        /* TABELA */
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f1f1f1; font-size: 0.75rem; text-transform: uppercase; color: #777; }
+        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
+        .g4 { background-color: #f1faf3; }
+        .pos { font-weight: bold; width: 30px; }
 
-        /* Tabela */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #f8f9fa; color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
-        .g4 { background-color: #f0fff4; }
-
-        /* Jogos */
-        .match-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f1f1;
-        }
-        .team { flex: 1; font-weight: 500; }
+        /* JOGOS */
+        .match-row { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px dashed #eee; }
+        .match-row:last-child { border-bottom: none; }
+        .team { flex: 1; font-size: 0.95rem; font-weight: 500; }
         .team-r { text-align: right; }
-        
-        .score-box { display: flex; align-items: center; gap: 10px; padding: 0 15px; }
-        input[type="number"] { 
-            width: 45px; 
-            height: 35px;
-            text-align: center; 
-            border: 2px solid #ddd; 
-            border-radius: 8px; 
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
+        .score-input { display: flex; align-items: center; gap: 8px; }
+        input[type="number"] { width: 42px; height: 35px; text-align: center; border: 2px solid #ddd; border-radius: 6px; font-weight: bold; font-size: 1.1rem; }
         input:focus { border-color: var(--primary); outline: none; }
 
-        .badge-lider { background: gold; border-radius: 50%; padding: 2px 6px; margin-right: 5px; }
+        /* REGULAMENTO */
+        .regra-item { margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .regra-item strong { color: var(--primary); display: block; margin-bottom: 4px; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.5rem; }
+            .team { font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Paulistão da Tradição 2026</h1>
+    <div style="margin-top: 10px; font-weight: 300;">Rancho Paumar • Itatiba/SP</div>
 </header>
+<div class="info-bar">
+    <span>📅 25 de Abril de 2026</span>
+    <span>🕒 Início: 13:00</span>
+    <span>⚽ Society (Grama Natural)</span>
+</div>
 
-<nav id="menu">
+<nav>
     <button onclick="trocar('tabela')" class="active">Tabela</button>
     <button onclick="trocar('rodadas')">Rodadas</button>
     <button onclick="trocar('mata')">Finais</button>
+    <button onclick="trocar('regras')">Regulamento</button>
 </nav>
 
 <div class="container">
     <section id="tabela" class="active">
         <div class="card">
-            <h2>Classificação Atual</h2>
+            <h2>Classificação Grupo Único</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Pos</th>
-                        <th style="text-align: left;">Clube</th>
+                        <th>#</th>
+                        <th style="text-align:left">Equipe</th>
                         <th>Pts</th>
                         <th>SG</th>
+                        <th>GP</th>
                     </tr>
                 </thead>
                 <tbody id="tbody"></tbody>
             </table>
+            <p style="font-size: 0.7rem; color: #888; margin-top: 15px;">* Critérios: Pts > Saldo > Gols Pró > Confronto Direto.</p>
         </div>
     </section>
 
     <section id="rodadas">
-        <div id="jogos"></div>
+        <div id="jogosContainer"></div>
     </section>
 
     <section id="mata">
         <div id="mataDiv"></div>
     </section>
+
+    <section id="regras">
+        <div class="card">
+            <h2>Regras Essenciais</h2>
+            <div class="regra-item"><strong>⏰ Duração</strong> 12 minutos (2 tempos de 6min).</div>
+            <div class="regra-item"><strong>🟨 Cartão Amarelo</strong> 2 min fora, mas pode ser substituído imediatamente.</div>
+            <div class="regra-item"><strong>🟥 Cartão Vermelho</strong> Expulso. Time fica 2 min com um a menos.</div>
+            <div class="regra-item"><strong>🚫 Proibições</strong> Sem carrinho, sem convidados, sem jogar sem camisa.</div>
+            <div class="regra-item"><strong>🔄 Substituições</strong> Livres (bola parada) com 7 jogadores em campo.</div>
+            <div class="regra-item"><strong>🤝 Empate no Mata-mata</strong> Decisão por pênaltis.</div>
+        </div>
+    </section>
 </div>
 
 <script>
-const rodadas = [
+const RODADAS_DATA = [
     { nome: "1ª Rodada", jogos: [["Legião Sorocabana","Romanos"],["Milites Peregrinus","Pão de Queijo"],["Galícia","Oratório"]] },
     { nome: "2ª Rodada", jogos: [["Milites Peregrinus","Oratório"],["Legião Sorocabana","Pão de Queijo"],["Trad Fut","Romanos"]] },
     { nome: "3ª Rodada", jogos: [["Romanos","Oratório"],["Trad Fut","Pão de Queijo"],["Legião Sorocabana","Galícia"]] },
     { nome: "4ª Rodada", jogos: [["Trad Fut","Oratório"],["Pão de Queijo","Galícia"],["Romanos","Milites Peregrinus"]] },
     { nome: "5ª Rodada", jogos: [["Trad Fut","Galícia"],["Legião Sorocabana","Milites Peregrinus"],["Oratório","Pão de Queijo"]] },
     { nome: "6ª Rodada", jogos: [["Trad Fut","Milites Peregrinus"],["Galícia","Romanos"],["Oratório","Legião Sorocabana"]] },
-    { nome: "7ª Rodada", jogos: [["Trad Fut","Legião Sorocabana"],["Milites Peregrinus","Galícia"],["Romanos","Pão de Queijo"]] }
-];
-
-let dados = JSON.parse(localStorage.getItem("tradicao_2026")) || {};
-
-function trocar(id){
-    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    event.currentTarget.classList.add("active");
-}
-
-function renderRodadas(){
-    const container = document.getElementById("jogos");
-    container.innerHTML = "";
-
-    rodadas.forEach((rodada, i) => {
-        let div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `<h2>${rodada.nome}</h2>`;
-        
-        rodada.jogos.forEach((j, idx) => {
-            let key = `${i}-${idx}`;
-            let g1 = dados[key]?.g1 ?? "";
-            let g2 = dados[key]?.g2 ?? "";
-            
-            div.innerHTML += `
-            <div class="match-row">
-                <span class="team">${j[0]}</span>
-                <div class="score-box">
-                    <input type="number" value="${g1}" oninput="salvar('${key}',0,this.value)">
-                    <span>×</span>
-                    <input type="number" value="${g2}" oninput="salvar('${key}',1,this.value)">
-                </div>
-                <span class="team team-r">${j[1]}</span>
-            </div>`;
-        });
-        container.appendChild(div);
-    });
-}
-
-function salvar(k, lado, v){
-    if(!dados[k]) dados[k] = { g1: null, g2: null };
-    let valor = v === "" ? null : parseInt(v);
-    if(lado === 0) dados[k].g1 = valor;
-    else dados[k].g2 = valor;
-    localStorage.setItem("tradicao_2026", JSON.stringify(dados));
-    calcular();
-}
-
-function calcular(){
-    let tabela = {};
-    const equipes = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
-    equipes.forEach(eq => tabela[eq] = { pts: 0, sg: 0 });
-
-    Object.entries(dados).forEach(([k, v]) => {
-        if(v.g1 === null || v.g2 === null) return;
-        let [r, i] = k.split("-");
-        let time = rodadas[r].jogos[i];
-
-        tabela[time[0]].sg += (v.g1 - v.g2);
-        tabela[time[1]].sg += (v.g2 - v.g1);
-
-        if(v.g1 > v.g2) tabela[time[0]].pts += 3;
-        else if(v.g2 > v.g1) tabela[time[1]].pts += 3;
-        else { tabela[time[0]].pts++; tabela[time[1]].pts++; }
-    });
-
-    let rank = Object.entries(tabela).sort((a,b) => b[1].pts - a[1].pts || b[1].sg - a[1].sg);
-    
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = "";
-    rank.forEach((r, i) => {
-        tbody.innerHTML += `
-        <tr class="${i < 4 ? 'g4' : ''}">
-            <td><strong>${i + 1}º</strong></td>
-            <td style="text-align: left;">${i === 0 ? '<span class="badge-lider">🏆</span>' : ''}${r[0]}</td>
-            <td><strong>${r[1].pts}</strong></td>
-            <td>${r[1].sg}</td>
-        </tr>`;
-    });
-    renderMata(rank);
-}
-
-function renderMata(rank){
-    let div = document.getElementById("mataDiv");
-    div.innerHTML = `
-    <div class='card'>
-        <h2>Fase Final</h2>
-        <p><strong>Semifinal A:</strong> ${rank[0][0]} vs ${rank[3][0]}</p>
-        <p><strong>Semifinal B:</strong> ${rank[1][0]} vs ${rank[2][0]}</p>
-    </div>`;
-}
-
-renderRodadas();
-calcular();
-</script>
-</body>
-</html>
