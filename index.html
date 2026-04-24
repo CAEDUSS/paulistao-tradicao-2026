@@ -1,199 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Paulistão da Tradição 2026</title>
-
-<style>
-body { font-family: Arial; margin:0; background:#f1f1f1; }
-header { background:#06aa48; color:white; padding:20px; text-align:center; }
-nav { display:flex; justify-content:center; gap:10px; background:#eee; padding:10px; }
-nav button { padding:10px; border:none; cursor:pointer; }
-.active { background:#06aa48; color:white; }
-section { display:none; padding:20px; }
-section.active { display:block; }
-.card { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
-table { width:100%; border-collapse:collapse; background:white; }
-th, td { padding:8px; border:1px solid #ddd; text-align:center; }
-input { width:40px; }
-</style>
+    <meta charset="UTF-8">
+    <title>Paulistão da Tradição 2026</title>
+    <style>
+        body { font-family: Arial; margin:0; background:#f1f1f1; }
+        header { background:#06aa48; color:white; padding:20px; text-align:center; }
+        nav { display:flex; justify-content:center; gap:10px; background:#eee; padding:10px; position: sticky; top: 0; z-index: 10; }
+        nav button { padding:10px; border:none; cursor:pointer; font-weight: bold; }
+        .active { background:#06aa48; color:white; }
+        section { display:none; padding:20px; max-width: 600px; margin: auto; }
+        section.active { display:block; }
+        .card { background:white; padding:15px; margin-bottom:10px; border-radius:10px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width:100%; border-collapse:collapse; background:white; }
+        th, td { padding:8px; border:1px solid #ddd; text-align:center; }
+        input { width:40px; text-align: center; }
+        .regra { font-size: 0.9em; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    </style>
 </head>
 <body>
 
 <header>
-<h1>Paulistão da Tradição 2026</h1>
+    <h1>Paulistão da Tradição 2026</h1>
+    <p style="margin:0">Rancho Paumar - Itatiba/SP</p>
 </header>
 
 <nav>
-<button onclick="trocar('tabela')">Tabela</button>
-<button onclick="trocar('rodadas')">Rodadas</button>
-<button onclick="trocar('mata')">Finais</button>
+    <button onclick="trocar('tabela')" id="btn-tabela" class="active">Tabela</button>
+    <button onclick="trocar('rodadas')" id="btn-rodadas">Rodadas</button>
+    <button onclick="trocar('mata')" id="btn-mata">Finais</button>
 </nav>
 
 <section id="tabela" class="active">
-<h2>Classificação</h2>
-<table>
-<thead>
-<tr><th>#</th><th>Equipe</th><th>Pts</th><th>SG</th></tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
+    <h2>Classificação</h2>
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>#</th><th>Equipe</th><th>Pts</th><th>SG</th></tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
 </section>
 
 <section id="rodadas">
-<h2>Rodadas</h2>
-<div id="jogos"></div>
+    <h2>Rodadas</h2>
+    <div id="jogos"></div>
 </section>
 
 <section id="mata">
-<h2>Fase Final</h2>
-<div id="mataDiv"></div>
+    <h2>Fase Final</h2>
+    <div id="mataDiv"></div>
 </section>
 
 <script>
 const rodadas = [
-  {
-    nome: "1ª Rodada",
-    jogos: [
-      ["Legião Sorocabana","Romanos"],
-      ["Milites Peregrinus","Pão de Queijo"],
-      ["Galícia","Oratório"]
-    ]
-  },
-  {
-    nome: "2ª Rodada",
-    jogos: [
-      ["Milites Peregrinus","Oratório"],
-      ["Legião Sorocabana","Pão de Queijo"],
-      ["Trad Fut","Romanos"]
-    ]
-  },
-  {
-    nome: "3ª Rodada",
-    jogos: [
-      ["Romanos","Oratório"],
-      ["Trad Fut","Pão de Queijo"],
-      ["Legião Sorocabana","Galícia"]
-    ]
-  },
-  {
-    nome: "4ª Rodada",
-    jogos: [
-      ["Trad Fut","Oratório"],
-      ["Pão de Queijo","Galícia"],
-      ["Romanos","Milites Peregrinus"]
-    ]
-  },
-  {
-    nome: "5ª Rodada",
-    jogos: [
-      ["Trad Fut","Galícia"],
-      ["Legião Sorocabana","Milites Peregrinus"],
-      ["Oratório","Pão de Queijo"]
-    ]
-  },
-  {
-    nome: "6ª Rodada",
-    jogos: [
-      ["Trad Fut","Milites Peregrinus"],
-      ["Galícia","Romanos"],
-      ["Oratório","Legião Sorocabana"]
-    ]
-  },
-  {
-    nome: "7ª Rodada",
-    jogos: [
-      ["Trad Fut","Legião Sorocabana"],
-      ["Milites Peregrinus","Galícia"],
-      ["Romanos","Pão de Queijo"]
-    ]
-  }
+    { nome: "1ª Rodada", jogos: [["Legião Sorocabana","Romanos"],["Milites Peregrinus","Pão de Queijo"],["Galícia","Oratório"]] },
+    { nome: "2ª Rodada", jogos: [["Milites Peregrinus","Oratório"],["Legião Sorocabana","Pão de Queijo"],["Trad Fut","Romanos"]] },
+    { nome: "3ª Rodada", jogos: [["Romanos","Oratório"],["Trad Fut","Pão de Queijo"],["Legião Sorocabana","Galícia"]] },
+    { nome: "4ª Rodada", jogos: [["Trad Fut","Oratório"],["Pão de Queijo","Galícia"],["Romanos","Milites Peregrinus"]] },
+    { nome: "5ª Rodada", jogos: [["Trad Fut","Galícia"],["Legião Sorocabana","Milites Peregrinus"],["Oratório","Pão de Queijo"]] },
+    { nome: "6ª Rodada", jogos: [["Trad Fut","Milites Peregrinus"],["Galícia","Romanos"],["Oratório","Legião Sorocabana"]] },
+    { nome: "7ª Rodada", jogos: [["Trad Fut","Legião Sorocabana"],["Milites Peregrinus","Galícia"],["Romanos","Pão de Queijo"]] }
 ];
 
-let dados = JSON.parse(localStorage.getItem("dados")) || {};
+let dados = JSON.parse(localStorage.getItem("dados_paulistao_tradicao")) || {};
 
 function trocar(id){
- document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    document.getElementById('btn-'+id).classList.add("active");
 }
 
 function render(){
- let jogosDiv = document.getElementById("jogos");
- jogosDiv.innerHTML="";
+    let jogosDiv = document.getElementById("jogos");
+    jogosDiv.innerHTML="";
 
- rodadas.forEach((rodada,i)=>{
- jogosDiv.innerHTML += `<div class='card'><strong>${rodada.nome}</strong><br><br>`;
- rodada.jogos.forEach((j,idx)=>{
- let key = `${i}-${idx}`;
- let g1 = dados[key]?.g1 ?? "";
- let g2 = dados[key]?.g2 ?? "";
- jogosDiv.innerHTML += `
- ${j[0]} <input value="${g1}" onchange="salvar('${key}',0,this.value)">
- x <input value="${g2}" onchange="salvar('${key}',1,this.value)"> ${j[1]}<br><br>`;
- });
- jogosDiv.innerHTML += "</div>";
-});
- jogosDiv.innerHTML += "</div>";
- });
+    rodadas.forEach((rodada,i)=>{
+        let html = `<div class='card'><strong>${rodada.nome}</strong><br><br>`;
+        rodada.jogos.forEach((j,idx)=>{
+            let key = `${i}-${idx}`;
+            let g1 = dados[key]?.g1 ?? "";
+            let g2 = dados[key]?.g2 ?? "";
+            html += `
+            <div style="margin-bottom:10px">
+                ${j[0]} <input type="number" value="${g1}" oninput="salvar('${key}',0,this.value)">
+                x <input type="number" value="${g2}" oninput="salvar('${key}',1,this.value)"> ${j[1]}
+            </div>`;
+        });
+        html += "</div>";
+        jogosDiv.innerHTML += html;
+    });
 
- calcular();
+    calcular();
 }
 
 function salvar(k,l,v){
- if(!dados[k]) dados[k]={};
- if(l===0) dados[k].g1=parseInt(v);
- else dados[k].g2=parseInt(v);
- localStorage.setItem("dados",JSON.stringify(dados));
- calcular();
+    if(!dados[k]) dados[k]={};
+    dados[k][l===0?'g1':'g2'] = v === "" ? null : parseInt(v);
+    localStorage.setItem("dados_paulistao_tradicao", JSON.stringify(dados));
+    calcular();
 }
 
 function calcular(){
- let tabela = {};
+    let tabela = {};
+    const equipes = ["Legião Sorocabana", "Romanos", "Milites Peregrinus", "Pão de Queijo", "Galícia", "Oratório", "Trad Fut"];
+    
+    equipes.forEach(eq => tabela[eq] = {pts:0, sg:0});
 
- rodadas.forEach(r=>r.jogos.forEach(j=>{
- tabela[j[0]] = tabela[j[0]] || {pts:0,sg:0};
- tabela[j[1]] = tabela[j[1]] || {pts:0,sg:0};
- });
+    Object.entries(dados).forEach(([k,v])=>{
+        if(v.g1 === null || v.g2 === null) return;
+        let [r,i] = k.split("-");
+        let j = rodadas[r].jogos[i];
 
- Object.entries(dados).forEach(([k,v])=>{
- if(isNaN(v.g1)||isNaN(v.g2)) return;
- let [r,i]=k.split("-");
- let j = rodadas[r].jogos[i];
+        tabela[j[0]].sg += v.g1-v.g2;
+        tabela[j[1]].sg += v.g2-v.g1;
 
- tabela[j[0]].sg += v.g1-v.g2;
- tabela[j[1]].sg += v.g2-v.g1;
+        if(v.g1>v.g2) tabela[j[0]].pts+=3;
+        else if(v.g2>v.g1) tabela[j[1]].pts+=3;
+        else { tabela[j[0]].pts++; tabela[j[1]].pts++; }
+    });
 
- if(v.g1>v.g2) tabela[j[0]].pts+=3;
- else if(v.g2>v.g1) tabela[j[1]].pts+=3;
- else { tabela[j[0]].pts++; tabela[j[1]].pts++; }
- });
+    let rank = Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
+    let tbody = document.getElementById("tbody");
+    tbody.innerHTML="";
 
- let rank = Object.entries(tabela).sort((a,b)=>b[1].pts-a[1].pts || b[1].sg-a[1].sg);
- let tbody = document.getElementById("tbody");
- tbody.innerHTML="";
+    rank.forEach((r,i)=>{
+        tbody.innerHTML += `<tr style='${i<4?"background:#d4edda":""}'>
+        <td>${i+1}</td><td>${i==0?"🥇 ":""}${r[0]}</td>
+        <td>${r[1].pts}</td><td>${r[1].sg}</td></tr>`;
+    });
 
- rank.forEach((r,i)=>{
- tbody.innerHTML += `<tr style='${i<4?"background:#d4edda":""}'>
- <td>${i+1}</td><td>${i==0?"🥇 ":""}${r[0]}</td>
- <td>${r[1].pts}</td><td>${r[1].sg}</td></tr>`;
- });
-
- renderMata(rank);
+    renderMata(rank);
 }
 
 function renderMata(rank){
- let div = document.getElementById("mataDiv");
- if(rank.length<4) return;
- div.innerHTML = `
- <div class='card'>
- Semifinal 1: ${rank[0][0]} x ${rank[3][0]}<br>
- Semifinal 2: ${rank[1][0]} x ${rank[2][0]}<br><br>
- 3º Lugar e Final serão definidos automaticamente
- </div>`;
-}
-
-render();
-</script>
-
-</body>
-</html>
+    let div = document.getElementById("mataDiv");
+    div.innerHTML = `
+    <div class='card'>
+        <strong>Semifinal 1:</strong> ${rank[0][0]} x ${rank[3][0]}<br>
+        <strong>Semifinal 2:</strong> ${rank[1][0]} x ${rank
